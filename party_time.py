@@ -54,7 +54,8 @@ cahoots = {
     "ending_messages": {
         "everyone_else": """
         The secret mission has come to an end,
-        time to guess who it was and what they were doing!""",
+        time to guess who it was and what they were doing!
+        """,
         "chosen_one": "Your mission is over.",
     },
 }
