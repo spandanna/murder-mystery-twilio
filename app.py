@@ -1,9 +1,11 @@
-from twilio.rest import Client
-import random
 import os
+import random
+
 from dotenv import load_dotenv
+from twilio.rest import Client
 
 load_dotenv()
+
 
 class Guest:
     def __init__(
@@ -49,11 +51,12 @@ class MurderMysteryParty:
         self.guest_count = 0
         self.murderer = None
         self.chosen_one = None
-    
+
     def update_guest_count(func):
         def _method(self, *args):
             func(self, *args)
             self.guest_count = len(self.guests)
+
         return _method
 
     @update_guest_count
@@ -99,7 +102,9 @@ class MurderMysteryParty:
                     phone_number=person.phone_number, message=normal_message
                 )
             elif person == except_guest:
-                self.send_text(phone_number=person.phone_number, message=except_message)
+                self.send_text(
+                    phone_number=person.phone_number, message=except_message
+                )
 
     def send_innocents_message(self, message: str):
         for person in self.guests:
@@ -107,8 +112,9 @@ class MurderMysteryParty:
                 self.send_text(phone_number=person.phone_number, message=message)
 
     def send_murderer_message(self, message: str):
-        self.murderer.send_text(phone_number=self.murderer.phone_number, message=message)
-    
+        self.murderer.send_text(
+            phone_number=self.murderer.phone_number, message=message
+        )
 
     def create_cahoots(self, cahoots_dict: dict):
         if not self.chosen_one:
@@ -116,34 +122,37 @@ class MurderMysteryParty:
             chosen_one.assign_cahoots(cahoots_dict)
             starting_messages = cahoots_dict["starting_messages"]
             self.send_to_all_except(
-                starting_messages["everyone_else"], starting_messages["chosen_one"], chosen_one
+                starting_messages["everyone_else"],
+                starting_messages["chosen_one"],
+                chosen_one,
             )
             self.chosen_one = chosen_one
             return "The chosen one has been chosen."
         elif self.chosen_one:
-            return "The chosen one has already been chosen. Finish the current quest before beginning a new one!"
+            return """The chosen one has already been chosen.
+        Finish the current quest before beginning a new one!"""
 
     def continue_cahoots(self, cahoots_dict: dict):
         if self.chosen_one:
             during_messages = cahoots_dict["during_messages"]
             self.send_to_all_except(
-                during_messages["everyone_else"], during_messages["chosen_one"], self.chosen_one
-            )            
+                during_messages["everyone_else"],
+                during_messages["chosen_one"],
+                self.chosen_one,
+            )
             return "The chosen one continues to be chosen"
         elif not self.chosen_one:
             return "A chosen one must first be chosen before cahoots can continue."
-    
+
     def end_cahoots(self, cahoots_dict: dict):
         if self.chosen_one:
             ending_messages = cahoots_dict["ending_messages"]
             self.send_to_all_except(
-                ending_messages["everyone_else"], ending_messages["chosen_one"], self.chosen_one
+                ending_messages["everyone_else"],
+                ending_messages["chosen_one"],
+                self.chosen_one,
             )
-            self.chosen_one = None    
+            self.chosen_one = None
             return "An end has been put to the cahoots."
         elif not self.chosen_one:
             return "A chosen one must first be chosen before cahoots can be ended."
-
-
-
-    
